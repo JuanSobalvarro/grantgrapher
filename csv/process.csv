@@ -1,0 +1,10 @@
+ProcessName, ExecTime, Priority
+P1,10,1
+P2,20,3
+P3,8,2
+P4,11,4
+P5,24,2
+P6,12,5
+P7,14,2
+P8,11,3
+P9,5,1
