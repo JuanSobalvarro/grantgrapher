@@ -4,6 +4,7 @@ class process
 {
     public:
         string name;
+        int arrivetime;
         int exectime;
         int priority;
         // color is set at the print
@@ -58,8 +59,9 @@ bool loadProcesses(char *filename)
         // once we get the row we add values to the process p
         p.name = row[0];
         //cout << row[1] << endl;
-        p.exectime = stoi(row[1]);
-        p.priority = stoi(row[2]);
+        p.arrivetime = stoi(row[1]);
+        p.exectime = stoi(row[2]);
+        p.priority = stoi(row[3]);
         //at the end we add p to the vector or processes
         processes.push_back(p);
     }   
@@ -75,7 +77,7 @@ bool sortProcesses(int index)
     switch (index)
     {
     case 0:
-        //FCFS();
+        FCFS();
         break;
     case 1:
         SJF();
@@ -106,7 +108,7 @@ bool printProcesses()
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(col, &csbi);
 
-    int len = 0, n = n;
+    int len = 0, n = processes.size();
     for (int i = 0; i < n; i++)
     {
         len += processes[i].exectime; 
@@ -163,7 +165,7 @@ bool printProcesses()
     // }
     // cout << endl;
 
-    int time = 0, timeraro = 0;
+    double time = 0, timeraro = 0;
     for (int i = 0; i < n; i++)
     {
         // len -> width draw squares
@@ -189,8 +191,8 @@ bool printProcesses()
 
     SetConsoleTextAttribute(col, 9);
     cout << "Tiempo total de exec: " << time << " ms"<< endl;
-    cout << "Tiempo prom de espera por proceso: " << time / n << " ms"<< endl;
-    cout << "Tiempo raro ese: " << timeraro / n << " ms" << endl;
+    //cout << "Tiempo prom de espera por proceso: " << time / n << " ms"<< endl;
+    cout << "Tiempo prom de espera ese: " << timeraro / n << " ms" << endl;
 
     // set default values
     SetConsoleTextAttribute(col, csbi.wAttributes);
@@ -205,19 +207,13 @@ vector<string> getmodes()
 
 void FCFS()
 {
-
-}
-
-void SJF()
-{
-    //bool swapped;
     int n = processes.size();
     //cout << n << endl;
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
         {
-            if (processes[j].exectime > processes[i].exectime)
+            if (processes[j].arrivetime > processes[i].arrivetime)
             {
                 process temp = processes[i];
                 processes[i] = processes[j];
@@ -225,6 +221,64 @@ void SJF()
             }
         }
     }
+}
+
+void SJF()
+{
+    /*
+    Process we do to sort
+    1. order by the arrive time
+    2. see if the process i arrives before the process i - 1 finish
+    3. once we get a process i that arrives after the process i - 1 finish or the end of the list we begin to sort
+    */
+
+    // ordenarlos por tiempo de llegada 
+    FCFS();
+
+    int n = processes.size();
+    double time = 0;
+    for (int i = 1; i < n; i++)
+    {
+        // time will register the instant of time we are 
+        time += processes[i - 1].exectime;
+        for (int j = i; j < n; j++)
+        {
+            // if the arrive time of a process j is more than the instant of time all process < j are validated
+            if (processes[j].arrivetime > time)
+            {
+                // sort all the process in the range
+                for (int k = i; k < j; k++)
+                {
+                    for (int l = i; l < j; l++)
+                    {
+                        if (processes[k].exectime < processes[l].exectime)
+                        {
+                            process temp = processes[k];
+                            processes[k] = processes[l];
+                            processes[l] = temp;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    // //bool swapped;
+    // int n = processes.size();
+    // //cout << n << endl;
+    // for (int i = 0; i < n; i++)
+    // {
+    //     for (int j = 0; j < n; j++)
+    //     {
+    //         if (processes[j].exectime > processes[i].exectime )
+    //         {
+    //             process temp = processes[i];
+    //             processes[i] = processes[j];
+    //             processes[j] = temp;
+    //         }
+    //     }
+    // }
 }
 
 void BP()
