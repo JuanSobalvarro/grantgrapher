@@ -75,7 +75,7 @@ bool sortProcesses(int index)
     switch (index)
     {
     case 0:
-        FCFS();
+        //FCFS();
         break;
     case 1:
         SJF();
@@ -205,7 +205,7 @@ vector<string> getmodes()
 
 void FCFS()
 {
-   return; 
+
 }
 
 void SJF()
